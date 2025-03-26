@@ -1,122 +1,15 @@
-/* Add these to your existing CSS file */
-
-/* BTC Live Price Section Styles */
-#btc-live {
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    padding: 20px;
-    margin: 20px 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.dark-mode #btc-live {
-    background-color: #2d2d2d;
-    color: #f8f9fa;
-}
-
-#btc-price {
-    font-size: 1.5rem;
-    font-weight: bold;
+body {
+    font-family: Arial, sans-serif;
     text-align: center;
-    padding: 15px;
-    background-color: white;
-    border-radius: 5px;
-    margin: 10px 0;
-}
-
-.dark-mode #btc-price {
-    background-color: #1a1a1a;
-}
-
-.price-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.current-price {
-    font-size: 2rem;
-    margin-bottom: 5px;
-}
-
-.price-change {
-    font-size: 1.2rem;
-    margin-bottom: 5px;
-}
-
-.update-time {
-    font-size: 0.8rem;
-    color: #666;
-    margin-top: 5px;
-}
-
-.dark-mode .update-time {
-    color: #aaa;
-}
-
-/* Portfolio table styles */
-#portfolio table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-}
-
-#portfolio th, #portfolio td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-.dark-mode #portfolio th, .dark-mode #portfolio td {
-    border-bottom: 1px solid #444;
-}
-
-#portfolio th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-}
-
-.dark-mode #portfolio th {
-    background-color: #333;
-}
-
-#portfolio tr:hover {
-    background-color: #f5f5f5;
-}
-
-.dark-mode #portfolio tr:hover {
-    background-color: #2a2a2a;
-}
-
-/* Watchlist styles */
-#watchlist {
-    list-style: none;
-    padding: 0;
-}
-
-#watchlist li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    margin: 5px 0;
-    background-color: #f8f9fa;
-    border-radius: 4px;
-}
-
-.dark-mode #watchlist li {
-    background-color: #2d2d2d;
-}
-
-.remove-btn {
-    background-color: #ff4d4d;
+    background-color: #121212;
     color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
 }
-
-.remove-btn:hover {
-    background-color: #ff3333;
+table {
+    width: 50%;
+    margin: 20px auto;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 10px;
+    border: 1px solid white;
 }
