@@ -7,18 +7,37 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>🚀 Real-Time Crypto Prices</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Coin</th>
-                <th>Price (USDT)</th>
-            </tr>
-        </thead>
-        <tbody id="crypto-data">
-            <!-- Data will be inserted here -->
-        </tbody>
-    </table>
+    <h1>📈 Market Watch Portfolio</h1>
+    
+    <section id="current-prices">
+        <h2>Current Prices</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Coin</th>
+                    <th>Price (USDT)</th>
+                </tr>
+            </thead>
+            <tbody id="crypto-data">
+                <!-- Data will be inserted here -->
+            </tbody>
+        </table>
+    </section>
+
+    <section id="market-trends">
+        <h2>Market Trends</h2>
+        <div id="btc-price">Loading BTC price...</div>
+        <!-- You can add more elements for other coins -->
+    </section>
+
+    <section id="news">
+        <h2>Latest Market News</h2>
+        <div id="news-content">
+            <!-- You can fetch and display news articles here -->
+        </div>
+    </section>
+
     <script src="script.js"></script>
+    <script src="binance-socket.js"></script>
 </body>
 </html>
