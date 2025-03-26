@@ -18,70 +18,123 @@ window.onload = function() {
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "dark") {
         document.body.classList.add("dark-mode");
+        document.querySelector("header").classList.add("dark-mode");
+        document.querySelector("section").classList.add("dark-mode");
+        document.querySelector("footer").classList.add("dark-mode");
         themeStatus.textContent = "Dark";
     }
-    updateWatchlist(); // Load watchlist on page load
+    
+    // Set current year in footer
+    document.getElementById("current-year").textContent = new Date().getFullYear();
+    
+    // Initialize watchlist
+    updateWatchlist();
+    
+    // Fetch stock data on page load
+    fetchStockData();
 };
 
 function fetchStockData() {
-    // Fetch real-time stock data from an API
-    const apiKey = 'YOUR_API_KEY'; // Replace with your API key
-    const stockSymbols = ['AAPL', 'GOOGL', 'AMZN'];
-    const stockData = [];
+    // For demo purposes, use hardcoded data instead of API call
+    // In production, you would use a real API key and fetch live data
+    const stockData = [
+        { name: 'AAPL', price: 173.57, change: 2.35, percentChange: 1.37 },
+        { name: 'GOOGL', price: 134.99, change: -0.59, percentChange: -0.44 },
+        { name: 'AMZN', price: 127.74, change: 0.96, percentChange: 0.76 },
+        { name: 'MSFT', price: 338.11, change: 3.27, percentChange: 0.98 },
+        { name: 'TSLA', price: 214.65, change: -3.89, percentChange: -1.78 }
+    ];
+    
+    updateStockTable(stockData);
+    
+    // Refresh data every 60 seconds
+    setTimeout(fetchStockData, 60000);
+}
 
-    stockSymbols.forEach(symbol => {
-        fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=5min&apikey=${apiKey}`)
-            .then(response => response.json())
-            .then(data => {
-                const latestData = data['Time Series (5min)'];
-                const latestTime = Object.keys(latestData)[0];
-                const stockInfo = latestData[latestTime];
-                stockData.push({
-                    name: symbol,
-                    price: parseFloat(stockInfo['1. open']),
-                    change: parseFloat(stockInfo['4. close']) - parseFloat(stockInfo['1. open']),
-                    percentChange: ((parseFloat(stockInfo['4. close']) - parseFloat(stockInfo['1. open'])) / parseFloat(stockInfo['1. open'])) * 100
-                });
-                updateStockTable();
-            });
+function updateStockTable(stockData) {
+    const tableBody = document.querySelector('#portfolio tbody');
+    tableBody.innerHTML = ''; // Clear existing rows
+    
+    stockData.forEach(stock => {
+        const row = document.createElement('tr');
+        
+        // Determine color based on change
+        const changeColor = stock.change >= 0 ? 'green' : 'red';
+        const changeSymbol = stock.change >= 0 ? '▲' : '▼';
+        
+        row.innerHTML = `
+            <td>${stock.name}</td>
+            <td>${stock.price.toFixed(2)}</td>
+            <td style="color: ${changeColor}">${changeSymbol} ${Math.abs(stock.change).toFixed(2)}</td>
+            <td style="color: ${changeColor}">${changeSymbol} ${Math.abs(stock.percentChange).toFixed(2)}%</td>
+        `;
+        
+        tableBody.appendChild(row);
     });
-
-    function updateStockTable() {
-        const tableBody = document.querySelector("#portfolio tbody");
-        tableBody.innerHTML = ''; // Clear existing rows
-        stockData.forEach(stock => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td>${stock.name}</td>
-                <td>$${stock.price.toFixed(2)}</td>
-                <td>${stock.change > 0 ? '+' : ''}${stock.change.toFixed(2)}</td>
-                <td>${stock.percentChange > 0 ? '+' : ''}${stock.percentChange.toFixed(2)}%</td>
-            `;
-            tableBody.appendChild(row);
-        });
-    }
 }
 
-function addToWatchlist(stockSymbol) {
-    const watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
-    if (!watchlist.includes(stockSymbol)) {
-        watchlist.push(stockSymbol);
-        localStorage.setItem("watchlist", JSON.stringify(watchlist));
+// Watchlist functionality
+const watchlistItems = JSON.parse(localStorage.getItem('watchlist')) || [];
+
+document.getElementById('add-to-watchlist').addEventListener('click', function() {
+    const stockInput = document.getElementById('stock-input');
+    const stockSymbol = stockInput.value.trim().toUpperCase();
+    
+    if (stockSymbol && !watchlistItems.includes(stockSymbol)) {
+        watchlistItems.push(stockSymbol);
+        localStorage.setItem('watchlist', JSON.stringify(watchlistItems));
         updateWatchlist();
+        stockInput.value = '';
     }
-}
+});
 
 function updateWatchlist() {
-    const watchlistContainer = document.getElementById("watchlist");
-    watchlistContainer.innerHTML = ''; // Clear existing items
-    const watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
-    watchlist.forEach(symbol => {
-        const listItem = document.createElement("li");
-        listItem.textContent = symbol;
-        watchlistContainer.appendChild(listItem);
+    const watchlistElement = document.getElementById('watchlist');
+    const emptyMessage = document.getElementById('empty-watchlist-message');
+    
+    if (watchlistItems.length === 0) {
+        emptyMessage.style.display = 'block';
+        return;
+    }
+    
+    emptyMessage.style.display = 'none';
+    watchlistElement.innerHTML = '';
+    
+    watchlistItems.forEach(symbol => {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+            <span>${symbol}</span>
+            <button class="remove-btn" data-symbol="${symbol}">Remove</button>
+        `;
+        watchlistElement.appendChild(listItem);
+    });
+    
+    // Add event listeners to remove buttons
+    document.querySelectorAll('.remove-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const symbol = this.getAttribute('data-symbol');
+            const index = watchlistItems.indexOf(symbol);
+            if (index !== -1) {
+                watchlistItems.splice(index, 1);
+                localStorage.setItem('watchlist', JSON.stringify(watchlistItems));
+                updateWatchlist();
+            }
+        });
     });
 }
 
+// Contact form handling
+document.getElementById('contact-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formStatus = document.getElementById('form-status');
+    formStatus.textContent = 'Sending message...';
+    
+    // Simulate form submission
+    setTimeout(() => {
+        formStatus.textContent = 'Message sent successfully!';
+        document.getElementById('contact-form').reset();
+    }, 1500);
+});
 function fetchFinancialNews() {
     // Fetch financial news from an API
     const newsContainer = document.getElementById("news-container");

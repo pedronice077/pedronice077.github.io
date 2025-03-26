@@ -52,9 +52,9 @@ function updateBTCPrice(data) {
     
     btcPriceElement.innerHTML = `
         <div class="price-container">
-            <span class="current-price">$${price}</span>
+            <span class="current-price">${price}</span>
             <span class="price-change" style="color: ${changeColor}">
-                ${changeSymbol} $${Math.abs(priceChange)} (${percentChange}%)
+                ${changeSymbol} ${Math.abs(priceChange)} (${percentChange}%)
             </span>
             <div class="update-time">Last updated: ${new Date().toLocaleTimeString()}</div>
         </div>
