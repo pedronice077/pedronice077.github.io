@@ -1,15 +1,51 @@
+/* Basic styles for the crypto tracker */
 body {
     font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #121212;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    color: #333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #4CAF50;
     color: white;
 }
-table {
-    width: 50%;
-    margin: 20px auto;
-    border-collapse: collapse;
+
+#market-trends {
+    margin-top: 20px;
 }
-th, td {
-    padding: 10px;
-    border: 1px solid white;
+
+.price-container {
+    display: flex;
+    align-items: center;
+}
+
+.current-price {
+    font-size: 1.5em;
+    margin-right: 10px;
+}
+
+.price-change {
+    font-weight: bold;
+}
+
+.update-time {
+    font-size: 0.8em;
+    color: #666;
 }

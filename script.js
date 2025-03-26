@@ -1,4 +1,5 @@
 const API_URL = "https://api.binance.com/api/v3/ticker/price";
+const ADDITIONAL_COINS = ["ETHUSDT", "BNBUSDT", "SOLUSDT"]; // Additional cryptocurrencies
 
 async function fetchCryptoData() {
     try {
@@ -9,7 +10,7 @@ async function fetchCryptoData() {
         const data = await response.json();
 
         // Select specific coins
-        const coins = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT"];
+        const coins = ["BTCUSDT", ...ADDITIONAL_COINS]; // Include additional coins
         const filteredData = data.filter(coin => coins.includes(coin.symbol));
 
         const tableBody = document.getElementById("crypto-data");
