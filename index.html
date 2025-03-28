@@ -3,56 +3,871 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Tracker</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>CryptoView - Real-Time Cryptocurrency Market Overview</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Global Styles */
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --dark-color: #2d3436;
+            --light-color: #f5f6fa;
+            --success-color: #00b894;
+            --danger-color: #d63031;
+            --warning-color: #fdcb6e;
+            --info-color: #0984e3;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 15px 0;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--dark-color);
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover, nav a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-login, .btn-signup {
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-signup {
+            background-color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            color: white;
+        }
+
+        .btn-login:hover {
+            background-color: rgba(108, 92, 231, 0.1);
+        }
+
+        .btn-signup:hover {
+            background-color: #5a4bc2;
+            border-color: #5a4bc2;
+        }
+
+        /* Main Content Styles */
+        main {
+            padding: 30px 0;
+        }
+
+        section {
+            margin-bottom: 30px;
+        }
+
+        h2, h3, h4 {
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+
+        .market-overview {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .market-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .market-stats {
+            display: flex;
+            gap: 30px;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .stat .label {
+            font-size: 0.9rem;
+            color: #636e72;
+        }
+
+        .stat .value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 5px 0;
+        }
+
+        .stat .change {
+            font-size: 0.9rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .change.positive {
+            background-color: rgba(0, 184, 148, 0.1);
+            color: var(--success-color);
+        }
+
+        .change.negative {
+            background-color: rgba(214, 48, 49, 0.1);
+            color: var(--danger-color);
+        }
+
+        /* Top Cryptos Section */
+        .top-cryptos {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .view-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .view-options button {
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-options button:hover, .view-options button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .crypto-table {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            font-weight: 600;
+            color: #636e72;
+            font-size: 0.9rem;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .crypto-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .symbol {
+            color: #636e72;
+            font-size: 0.9rem;
+        }
+
+        /* News Section */
+        .news-section {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .news-card {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .news-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .news-content {
+            padding: 15px;
+        }
+
+        .news-source {
+            font-size: 0.8rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .news-content h4 {
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .news-content p {
+            font-size: 0.9rem;
+            color: #636e72;
+            margin-bottom: 10px;
+        }
+
+        .news-time {
+            font-size: 0.8rem;
+            color: #b2bec3;
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 40px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-section h4 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .footer-section p {
+            font-size: 0.9rem;
+            color: #b2bec3;
+            margin-bottom: 15px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section ul li a {
+            color: #b2bec3;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section ul li a:hover {
+            color: white;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icons a {
+            color: white;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            color: var(--primary-color);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            color: #b2bec3;
+        }
+
+        /* Loading State */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Last Updated */
+        .last-updated {
+            text-align: right;
+            font-size: 0.8rem;
+            color: #636e72;
+            margin-top: 10px;
+        }
+
+        /* Error Message */
+        .error {
+            color: var(--danger-color);
+            padding: 10px;
+            text-align: center;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            header .container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .market-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .market-stats {
+                width: 100%;
+                justify-content: space-between;
+                gap: 10px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .view-options {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            th, td {
+                padding: 8px 10px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>🚀 Real-Time Crypto Prices</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Coin</th>
-                    <th>Price (USDT)</th>
-                </tr>
-            </thead>
-            <tbody id="crypto-data">
-                <!-- Data will be inserted here -->
-            </tbody>
-        </table>
-    </section>
-
-    <section id="market-trends">
-        <div id="eth-price">Loading ETH price...</div>
-        <div id="bnb-price">Loading BNB price...</div>
-        <div id="sol-price">Loading SOL price...</div>
-
-        <h2>Market Trends</h2>
-        <div id="btc-price">Loading BTC price...</div>
-        <!-- You can add more elements for other coins -->
-    </section>
-
-    <section id="forex-overview">
-        <h2>Forex Market Overview</h2>
-        <div id="forex-data">
-            <!-- Forex data will be inserted here -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <i class="fab fa-bitcoin"></i>
+                <h1>CryptoView</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#" class="active">Dashboard</a></li>
+                    <li><a href="#">Markets</a></li>
+                    <li><a href="#">Portfolio</a></li>
+                    <li><a href="#">News</a></li>
+                    <li><a href="#">Learn</a></li>
+                </ul>
+            </nav>
+            <div class="user-actions">
+                <button class="btn-login">Login</button>
+                <button class="btn-signup">Sign Up</button>
+            </div>
         </div>
-    </section>
-    
-    <section id="economic-calendar">
-        <h2>Economic Calendar</h2>
-        <div id="calendar-data">
-            <!-- Economic events will be inserted here -->
-        </div>
-    </section>
+    </header>
 
-    <section id="news">
-        <h2>Latest Finance and Crypto News</h2>
-        <div id="news-content">
-            <!-- You can fetch and display latest finance and crypto news articles here -->
-        </div>
-    </section>
+    <main class="container">
+        <section class="market-overview">
+            <div class="market-header">
+                <h2>Market Overview</h2>
+                <div class="market-stats" id="global-stats">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="last-updated" id="last-updated"></div>
+        </section>
 
-    <script src="script.js"></script>
-    <script src="binance-socket.js"></script>
+        <section class="top-cryptos">
+            <div class="section-header">
+                <h3>Top Cryptocurrencies</h3>
+                <div class="view-options">
+                    <button class="active">All</button>
+                    <button>Gainers</button>
+                    <button>Losers</button>
+                </div>
+            </div>
+            <div class="crypto-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>24h %</th>
+                            <th>Volume(24h)</th>
+                            <th>Market Cap</th>
+                            <th>Last 7 Days</th>
+                        </tr>
+                    </thead>
+                    <tbody id="crypto-data">
+                        <tr>
+                            <td colspan="7" class="loading">
+                                <div class="spinner"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="news-section">
+            <h3>Latest Crypto News</h3>
+            <div class="news-grid">
+                <div class="news-card">
+                    <img src="https://via.placeholder.com/300x150" alt="News Image">
+                    <div class="news-content">
+                        <span class="news-source">CoinDesk</span>
+                        <h4>Bitcoin ETF Approval Expected Soon</h4>
+                        <p>Analysts predict SEC approval for spot Bitcoin ETFs could come as early as next month...</p>
+                        <span class="news-time">2 hours ago</span>
+                    </div>
+                </div>
+                <div class="news-card">
+                    <img src="https://via.placeholder.com/300x150" alt="News Image">
+                    <div class="news-content">
+                        <span class="news-source">CryptoNews</span>
+                        <h4>Ethereum Layer 2 Solutions See Record Growth</h4>
+                        <p>Transaction volume on Ethereum Layer 2 networks has increased by 150% this quarter...</p>
+                        <span class="news-time">5 hours ago</span>
+                    </div>
+                </div>
+                <div class="news-card">
+                    <img src="https://via.placeholder.com/300x150" alt="News Image">
+                    <div class="news-content">
+                        <span class="news-source">The Block</span>
+                        <h4>Regulatory Changes Coming to DeFi Sector</h4>
+                        <p>Global financial regulators are preparing new guidelines for decentralized finance platforms...</p>
+                        <span class="news-time">1 day ago</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>CryptoView</h4>
+                    <p>Your comprehensive cryptocurrency market overview platform providing real-time data, news, and analytics.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">API</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year"></span> CryptoView. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Configuration
+        const TOP_COINS_LIMIT = 20; // Number of top cryptocurrencies to display
+        const REFRESH_INTERVAL = 30000; // 50 seconds for initial data refresh
+        const WEBSOCKET_RECONNECT_DELAY = 5000; // 1 minute to reconnect if connection drops
+
+        // DOM Elements
+        const cryptoDataElement = document.getElementById('crypto-data');
+        const globalStatsElement = document.getElementById('global-stats');
+        const lastUpdatedElement = document.getElementById('last-updated');
+        const currentYearElement = document.getElementById('current-year');
+
+        // State
+        let cryptoData = {};
+        let webSocket = null;
+        let initialDataLoaded = false;
+
+        // Set current year in footer
+        currentYearElement.textContent = new Date().getFullYear();
+
+        // Format currency
+        function formatCurrency(value, symbol = '$') {
+            return symbol + parseFloat(value).toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 8
+            });
+        }
+
+        // Format large numbers
+        function formatLargeNumber(num, digits = 2) {
+            const units = ['', 'K', 'M', 'B', 'T'];
+            const numValue = parseFloat(num);
+            const tier = Math.log10(Math.abs(numValue)) / 3 | 0;
+
+            if (tier === 0) return numValue.toFixed(digits);
+
+            const suffix = units[tier];
+            const scale = Math.pow(10, tier * 3);
+            const scaled = numValue / scale;
+
+            return scaled.toFixed(digits) + suffix;
+        }
+
+        // Format percentage
+        function formatPercentage(value) {
+            const num = parseFloat(value);
+            return (num > 0 ? '+' : '') + num.toFixed(2) + '%';
+        }
+
+        // Update last updated time
+        function updateLastUpdatedTime() {
+            const now = new Date();
+            lastUpdatedElement.textContent = `Last updated: ${now.toLocaleTimeString()}`;
+        }
+
+        // Calculate 24h price change percentage
+        function calculate24hChange(currentPrice, openPrice) {
+            if (!openPrice || openPrice === 0) return 0;
+            return ((currentPrice - openPrice) / openPrice) * 100;
+        }
+
+        // Fetch initial data from Binance API
+        async function fetchInitialData() {
+            try {
+                const response = await fetch('https://api.binance.com/api/v3/ticker/24hr');
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch initial data from Binance');
+                }
+
+                const data = await response.json();
+
+                // Filter only USDT pairs and sort by volume
+                const usdtPairs = data
+                    .filter(item => item.symbol.endsWith('USDT'))
+                    .sort((a, b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume))
+                    .slice(0, TOP_COINS_LIMIT);
+
+                // Store initial data
+                usdtPairs.forEach(pair => {
+                    cryptoData[pair.symbol] = {
+                        symbol: pair.symbol,
+                        name: pair.symbol.replace('USDT', ''),
+                        price: pair.lastPrice,
+                        openPrice: pair.openPrice,
+                        change24h: calculate24hChange(pair.lastPrice, pair.openPrice),
+                        volume: pair.quoteVolume,
+                        marketCap: 'N/A' // Binance doesn't provide market cap in the 24hr ticker
+                    };
+                });
+
+                initialDataLoaded = true;
+                renderCryptoData();
+                updateGlobalStats();
+                updateLastUpdatedTime();
+
+                // After initial load, establish WebSocket connections
+                setupWebSockets();
+            } catch (error) {
+                console.error('Error fetching initial data:', error);
+                cryptoDataElement.innerHTML = '<tr><td colspan="7" class="error">Failed to load initial data. Please refresh the page.</td></tr>';
+            }
+        }
+
+        // Update global market stats
+        function updateGlobalStats() {
+            if (!initialDataLoaded) return;
+
+            // Calculate totals (note: Binance doesn't provide global stats, so we'll calculate from our data)
+            let totalVolume = 0;
+            let totalMarketCap = 0; // This would be inaccurate since we don't have market caps
+
+            Object.values(cryptoData).forEach(coin => {
+                totalVolume += parseFloat(coin.volume) || 0;
+            });
+
+            // Find BTC price for dominance calculation
+            const btcData = cryptoData['BTCUSDT'] || {};
+            const btcPrice = parseFloat(btcData.price) || 0;
+
+            globalStatsElement.innerHTML = `
+                <div class="stat">
+                    <span class="label">Total Volume (24h)</span>
+                    <span class="value">${formatCurrency(totalVolume)}</span>
+                </div>
+                <div class="stat">
+                    <span class="label">BTC Price</span>
+                    <span class="value">${formatCurrency(btcPrice)}</span>
+                    <span class="change ${btcData.change24h >= 0 ? 'positive' : 'negative'}">
+                        ${formatPercentage(btcData.change24h || 0)}
+                    </span>
+                </div>
+            `;
+        }
+
+        // Setup WebSocket connections for each cryptocurrency
+        function setupWebSockets() {
+            const symbols = Object.keys(cryptoData);
+
+            // Close existing connection if any
+            if (webSocket) {
+                webSocket.close();
+            }
+
+            // Create a single WebSocket connection for all symbols
+            const streams = symbols.map(symbol => `${symbol.toLowerCase()}@ticker`).join('/');
+            webSocket = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
+
+            webSocket.onopen = () => {
+                console.log('WebSocket connection established');
+            };
+
+            webSocket.onmessage = (event) => {
+                const message = JSON.parse(event.data);
+                const { data } = message;
+
+                if (data && data.s) {
+                    const symbol = data.s;
+                    const price = parseFloat(data.c);
+                    const openPrice = parseFloat(data.o);
+                    const change24h = calculate24hChange(price, openPrice);
+                    const volume = parseFloat(data.q);
+
+                    // Update crypto data
+                    cryptoData[symbol] = {
+                        ...cryptoData[symbol],
+                        price: data.c,
+                        change24h,
+                        volume: data.q
+                    };
+
+                    // Update UI
+                    renderCryptoData();
+                    updateGlobalStats();
+                    updateLastUpdatedTime();
+                }
+            };
+
+            webSocket.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+
+            webSocket.onclose = () => {
+                console.log('WebSocket connection closed. Attempting to reconnect...');
+                setTimeout(setupWebSockets, WEBSOCKET_RECONNECT_DELAY);
+            };
+        }
+
+
+        // Render cryptocurrency data
+        function renderCryptoData(filter = 'All') {
+            if (!initialDataLoaded) return;
+
+            // Convert object to array and filter
+            let dataArray = Object.values(cryptoData);
+
+            // Apply filter
+            if (filter === 'Gainers') {
+                dataArray = dataArray.filter(coin => coin.change24h > 0);
+            } else if (filter === 'Losers') {
+                dataArray = dataArray.filter(coin => coin.change24h < 0);
+            }
+
+            // Sort by volume
+            dataArray.sort((a, b) => parseFloat(b.volume) - parseFloat(a.volume));
+
+            // Render table
+            cryptoDataElement.innerHTML = dataArray.map((coin, index) => {
+                const change24h = coin.change24h || 0;
+
+                return `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>
+                            <div class="crypto-name">
+                                <img src="https://cryptoicons.org/api/icon/${coin.name.toLowerCase()}/50" alt="${coin.name}" width="24" height="24">
+                                <span>${coin.name}</span>
+                                <span class="symbol">${coin.symbol.replace('USDT', '')}</span>
+                            </div>
+                        </td>
+                        <td>${formatCurrency(coin.price)}</td>
+                        <td><span class="change ${change24h >= 0 ? 'positive' : 'negative'}">${formatPercentage(change24h)}</span></td>
+                        <td>${formatCurrency(coin.volume)}</td>
+                        <td>${coin.marketCap === 'N/A' ? 'N/A' : formatCurrency(coin.marketCap)}</td>
+                        <td>
+                            <img src="https://chart.googleapis.com/chart?cht=lc&chs=100x30&chd=t:10,20,30,40,30,20,10&chco=0077CC&chm=B,DDDDDD80,0,0,0&chds=a"
+                                 alt="${coin.name} 7-day chart" width="100" height="30">
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filter cryptocurrency data
+        function filterCryptoData(filter) {
+            renderCryptoData(filter);
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fetch initial data
+            fetchInitialData();
+
+            // Set up periodic refresh (for initial data only - WebSocket handles real-time updates)
+            setInterval(() => {
+                if (!webSocket || webSocket.readyState !== WebSocket.OPEN) {
+                    fetchInitialData();
+                }
+            }, REFRESH_INTERVAL);
+
+            // Add event listeners for view options
+            const viewOptions = document.querySelectorAll('.view-options button');
+            viewOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    viewOptions.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    filterCryptoData(this.textContent);
+                });
+            });
+        });
+    </script>
 </body>
 </html>
