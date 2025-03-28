@@ -536,36 +536,39 @@
 
         <section class="news-section">
             <h3>Latest Crypto News</h3>
-            <div class="news-grid">
-                <div class="news-card">
-                    <img src="https://via.placeholder.com/300x150" alt="News Image">
-                    <div class="news-content">
-                        <span class="news-source">CoinDesk</span>
-                        <h4>Bitcoin ETF Approval Expected Soon</h4>
-                        <p>Analysts predict SEC approval for spot Bitcoin ETFs could come as early as next month...</p>
-                        <span class="news-time">2 hours ago</span>
-                    </div>
-                </div>
-                <div class="news-card">
-                    <img src="https://via.placeholder.com/300x150" alt="News Image">
-                    <div class="news-content">
-                        <span class="news-source">CryptoNews</span>
-                        <h4>Ethereum Layer 2 Solutions See Record Growth</h4>
-                        <p>Transaction volume on Ethereum Layer 2 networks has increased by 150% this quarter...</p>
-                        <span class="news-time">5 hours ago</span>
-                    </div>
-                </div>
-                <div class="news-card">
-                    <img src="https://via.placeholder.com/300x150" alt="News Image">
-                    <div class="news-content">
-                        <span class="news-source">The Block</span>
-                        <h4>Regulatory Changes Coming to DeFi Sector</h4>
-                        <p>Global financial regulators are preparing new guidelines for decentralized finance platforms...</p>
-                        <span class="news-time">1 day ago</span>
-                    </div>
-                </div>
-            </div>
+            <script>
+                const API_KEY = "YOUR_API_KEY"; // 218164b91b8c43bfbae5a0165256679d
+                const NEWS_URL = `https://newsapi.org/v2/everything?q=cryptocurrency&language=en&sortBy=publishedAt&apiKey=${API_KEY}`;
+
+                async function fetchCryptoNews() {
+                    try {
+                        let response = await fetch(NEWS_URL);
+                        let data = await response.json();
+                        let articles = data.articles.slice(0, 5); // Get the top 5 news articles
+
+                        let newsContainer = document.getElementById("crypto-news");
+                        newsContainer.innerHTML = articles.map(article => `
+                            <div class="news-card">
+                                <img src="${article.urlToImage || 'https://via.placeholder.com/300x150'}" alt="News Image">
+                                <div class="news-content">
+                                    <span class="news-source">${article.source.name}</span>
+                                    <h4>${article.title}</h4>
+                                    <p>${article.description || 'No description available.'}</p>
+                                    <span class="news-time">${new Date(article.publishedAt).toLocaleString()}</span>
+                                </div>
+                            </div>
+                        `).join("");
+                    } catch (error) {
+                        console.error("Error fetching news:", error);
+                        document.getElementById("crypto-news").innerHTML = '<p class="error">Failed to load news. Please try again later.</p>';
+                    }
+                }
+
+                // Call fetchCryptoNews when the page loads
+                document.addEventListener('DOMContentLoaded', fetchCryptoNews);
+            </script>
         </section>
+
     </main>
 
     <footer>
@@ -595,10 +598,21 @@
                 <div class="footer-section">
                     <h4>Connect</h4>
                     <div class="social-icons">
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-telegram"></i></a>
-                        <a href="#"><i class="fab fa-discord"></i></a>
-                        <a href="#"><i class="fab fa-github"></i></a>
+                        <div class="social-icons">
+                            <a href="https://twitter.com/yourusername" target="_blank">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="https://t.me/yourusername" target="_blank">
+                                <i class="fab fa-telegram"></i>
+                            </a>
+                            <a href="https://discord.gg/pedronice1" target="_blank">
+                                <i class="fab fa-discord"></i>
+                            </a>
+                            <a href="https://github.com/pedronice077" target="_blank">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -608,266 +622,279 @@
         </div>
     </footer>
 
-    <script>
-        // Configuration
-        const TOP_COINS_LIMIT = 20; // Number of top cryptocurrencies to display
-        const REFRESH_INTERVAL = 30000; // 50 seconds for initial data refresh
-        const WEBSOCKET_RECONNECT_DELAY = 5000; // 1 minute to reconnect if connection drops
+<script>
+    // Configuration
+    const TOP_COINS_LIMIT = 20; // Number of top cryptocurrencies to display
+    const REFRESH_INTERVAL = 30000; // 30 seconds for initial data refresh
+    const WEBSOCKET_RECONNECT_DELAY = 5000; // 5 seconds to reconnect if connection drops
 
-        // DOM Elements
-        const cryptoDataElement = document.getElementById('crypto-data');
-        const globalStatsElement = document.getElementById('global-stats');
-        const lastUpdatedElement = document.getElementById('last-updated');
-        const currentYearElement = document.getElementById('current-year');
+    // DOM Elements
+    const cryptoDataElement = document.getElementById('crypto-data');
+    const globalStatsElement = document.getElementById('global-stats');
+    const lastUpdatedElement = document.getElementById('last-updated');
+    const currentYearElement = document.getElementById('current-year');
+    const cryptoNewsElement = document.getElementById('crypto-news');
 
-        // State
-        let cryptoData = {};
-        let webSocket = null;
-        let initialDataLoaded = false;
+    // State
+    let cryptoData = {};
+    let webSocket = null;
+    let initialDataLoaded = false;
 
-        // Set current year in footer
-        currentYearElement.textContent = new Date().getFullYear();
+    // Set current year in footer
+    currentYearElement.textContent = new Date().getFullYear();
 
-        // Format currency
-        function formatCurrency(value, symbol = '$') {
-            return symbol + parseFloat(value).toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 8
+    // Format currency
+    function formatCurrency(value, symbol = '$') {
+        return symbol + parseFloat(value).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 8
+        });
+    }
+
+    // Format large numbers
+    function formatLargeNumber(num, digits = 2) {
+        const units = ['', 'K', 'M', 'B', 'T'];
+        const numValue = parseFloat(num);
+        const tier = Math.log10(Math.abs(numValue)) / 3 | 0;
+
+        if (tier === 0) return numValue.toFixed(digits);
+
+        const suffix = units[tier];
+        const scale = Math.pow(10, tier * 3);
+        const scaled = numValue / scale;
+
+        return scaled.toFixed(digits) + suffix;
+    }
+
+    // Format percentage
+    function formatPercentage(value) {
+        const num = parseFloat(value);
+        return (num > 0 ? '+' : '') + num.toFixed(2) + '%';
+    }
+
+    // Update last updated time
+    function updateLastUpdatedTime() {
+        const now = new Date();
+        lastUpdatedElement.textContent = `Last updated: ${now.toLocaleTimeString()}`;
+    }
+
+    // Calculate 24h price change percentage
+    function calculate24hChange(currentPrice, openPrice) {
+        if (!openPrice || openPrice === 0) return 0;
+        return ((currentPrice - openPrice) / openPrice) * 100;
+    }
+
+    // Fetch initial data from Binance API
+    async function fetchInitialData() {
+        try {
+            const response = await fetch('https://api.binance.com/api/v3/ticker/24hr');
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch initial data from Binance');
+            }
+
+            const data = await response.json();
+
+            // Filter only USDT pairs and sort by volume
+            const usdtPairs = data
+                .filter(item => item.symbol.endsWith('USDT'))
+                .sort((a, b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume))
+                .slice(0, TOP_COINS_LIMIT);
+
+            // Store initial data
+            usdtPairs.forEach(pair => {
+                cryptoData[pair.symbol] = {
+                    symbol: pair.symbol,
+                    name: pair.symbol.replace('USDT', ''),
+                    price: pair.lastPrice,
+                    openPrice: pair.openPrice,
+                    change24h: calculate24hChange(pair.lastPrice, pair.openPrice),
+                    volume: pair.quoteVolume,
+                    marketCap: 'N/A' // Binance doesn't provide market cap in the 24hr ticker
+                };
             });
+
+            initialDataLoaded = true;
+            renderCryptoData();
+            updateGlobalStats();
+            updateLastUpdatedTime();
+
+            // After initial load, establish WebSocket connections
+            setupWebSockets();
+        } catch (error) {
+            console.error('Error fetching initial data:', error);
+            cryptoDataElement.innerHTML = '<tr><td colspan="7" class="error">Failed to load initial data. Please refresh the page.</td></tr>';
+        }
+    }
+
+    // Update global market stats
+    function updateGlobalStats() {
+        if (!initialDataLoaded) return;
+
+        let totalVolume = 0;
+        Object.values(cryptoData).forEach(coin => {
+            totalVolume += parseFloat(coin.volume) || 0;
+        });
+
+        const btcData = cryptoData['BTCUSDT'] || {};
+        const btcPrice = parseFloat(btcData.price) || 0;
+
+        globalStatsElement.innerHTML = `
+            <div class="stat">
+                <span class="label">Total Volume (24h)</span>
+                <span class="value">${formatCurrency(totalVolume)}</span>
+            </div>
+            <div class="stat">
+                <span class="label">BTC Price</span>
+                <span class="value">${formatCurrency(btcPrice)}</span>
+                <span class="change ${btcData.change24h >= 0 ? 'positive' : 'negative'}">
+                    ${formatPercentage(btcData.change24h || 0)}
+                </span>
+            </div>
+        `;
+    }
+
+    // Setup WebSocket connections for each cryptocurrency
+    function setupWebSockets() {
+        const symbols = Object.keys(cryptoData);
+
+        if (webSocket) {
+            webSocket.close();
         }
 
-        // Format large numbers
-        function formatLargeNumber(num, digits = 2) {
-            const units = ['', 'K', 'M', 'B', 'T'];
-            const numValue = parseFloat(num);
-            const tier = Math.log10(Math.abs(numValue)) / 3 | 0;
+        const streams = symbols.map(symbol => `${symbol.toLowerCase()}@ticker`).join('/');
+        webSocket = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
 
-            if (tier === 0) return numValue.toFixed(digits);
+        webSocket.onopen = () => {
+            console.log('WebSocket connection established');
+        };
 
-            const suffix = units[tier];
-            const scale = Math.pow(10, tier * 3);
-            const scaled = numValue / scale;
+        webSocket.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            const { data } = message;
 
-            return scaled.toFixed(digits) + suffix;
-        }
+            if (data && data.s) {
+                const symbol = data.s;
+                const price = parseFloat(data.c);
+                const openPrice = parseFloat(data.o);
+                const change24h = calculate24hChange(price, openPrice);
+                const volume = parseFloat(data.q);
 
-        // Format percentage
-        function formatPercentage(value) {
-            const num = parseFloat(value);
-            return (num > 0 ? '+' : '') + num.toFixed(2) + '%';
-        }
+                cryptoData[symbol] = {
+                    ...cryptoData[symbol],
+                    price: data.c,
+                    change24h,
+                    volume: data.q
+                };
 
-        // Update last updated time
-        function updateLastUpdatedTime() {
-            const now = new Date();
-            lastUpdatedElement.textContent = `Last updated: ${now.toLocaleTimeString()}`;
-        }
-
-        // Calculate 24h price change percentage
-        function calculate24hChange(currentPrice, openPrice) {
-            if (!openPrice || openPrice === 0) return 0;
-            return ((currentPrice - openPrice) / openPrice) * 100;
-        }
-
-        // Fetch initial data from Binance API
-        async function fetchInitialData() {
-            try {
-                const response = await fetch('https://api.binance.com/api/v3/ticker/24hr');
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch initial data from Binance');
-                }
-
-                const data = await response.json();
-
-                // Filter only USDT pairs and sort by volume
-                const usdtPairs = data
-                    .filter(item => item.symbol.endsWith('USDT'))
-                    .sort((a, b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume))
-                    .slice(0, TOP_COINS_LIMIT);
-
-                // Store initial data
-                usdtPairs.forEach(pair => {
-                    cryptoData[pair.symbol] = {
-                        symbol: pair.symbol,
-                        name: pair.symbol.replace('USDT', ''),
-                        price: pair.lastPrice,
-                        openPrice: pair.openPrice,
-                        change24h: calculate24hChange(pair.lastPrice, pair.openPrice),
-                        volume: pair.quoteVolume,
-                        marketCap: 'N/A' // Binance doesn't provide market cap in the 24hr ticker
-                    };
-                });
-
-                initialDataLoaded = true;
                 renderCryptoData();
                 updateGlobalStats();
                 updateLastUpdatedTime();
-
-                // After initial load, establish WebSocket connections
-                setupWebSockets();
-            } catch (error) {
-                console.error('Error fetching initial data:', error);
-                cryptoDataElement.innerHTML = '<tr><td colspan="7" class="error">Failed to load initial data. Please refresh the page.</td></tr>';
             }
+        };
+
+        webSocket.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        webSocket.onclose = () => {
+            console.log('WebSocket connection closed. Attempting to reconnect...');
+            setTimeout(setupWebSockets, WEBSOCKET_RECONNECT_DELAY);
+        };
+    }
+
+    // Render cryptocurrency data
+    function renderCryptoData(filter = 'All') {
+        if (!initialDataLoaded) return;
+
+        let dataArray = Object.values(cryptoData);
+
+        if (filter === 'Gainers') {
+            dataArray = dataArray.filter(coin => coin.change24h > 0);
+        } else if (filter === 'Losers') {
+            dataArray = dataArray.filter(coin => coin.change24h < 0);
         }
 
-        // Update global market stats
-        function updateGlobalStats() {
-            if (!initialDataLoaded) return;
+        dataArray.sort((a, b) => parseFloat(b.volume) - parseFloat(a.volume));
 
-            // Calculate totals (note: Binance doesn't provide global stats, so we'll calculate from our data)
-            let totalVolume = 0;
-            let totalMarketCap = 0; // This would be inaccurate since we don't have market caps
+        cryptoDataElement.innerHTML = dataArray.map((coin, index) => {
+            const change24h = coin.change24h || 0;
 
-            Object.values(cryptoData).forEach(coin => {
-                totalVolume += parseFloat(coin.volume) || 0;
-            });
-
-            // Find BTC price for dominance calculation
-            const btcData = cryptoData['BTCUSDT'] || {};
-            const btcPrice = parseFloat(btcData.price) || 0;
-
-            globalStatsElement.innerHTML = `
-                <div class="stat">
-                    <span class="label">Total Volume (24h)</span>
-                    <span class="value">${formatCurrency(totalVolume)}</span>
-                </div>
-                <div class="stat">
-                    <span class="label">BTC Price</span>
-                    <span class="value">${formatCurrency(btcPrice)}</span>
-                    <span class="change ${btcData.change24h >= 0 ? 'positive' : 'negative'}">
-                        ${formatPercentage(btcData.change24h || 0)}
-                    </span>
-                </div>
+            return `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>
+                        <div class="crypto-name">
+                            <img src="https://cryptoicons.org/api/icon/${coin.name.toLowerCase()}/50" alt="${coin.name}" width="24" height="24">
+                            <span>${coin.name}</span>
+                            <span class="symbol">${coin.symbol.replace('USDT', '')}</span>
+                        </div>
+                    </td>
+                    <td>${formatCurrency(coin.price)}</td>
+                    <td><span class="change ${change24h >= 0 ? 'positive' : 'negative'}">${formatPercentage(change24h)}</span></td>
+                    <td>${formatCurrency(coin.volume)}</td>
+                    <td>${coin.marketCap === 'N/A' ? 'N/A' : formatCurrency(coin.marketCap)}</td>
+                    <td>
+                        <img src="https://chart.googleapis.com/chart?cht=lc&chs=100x30&chd=t:10,20,30,40,30,20,10&chco=0077CC&chm=B,DDDDDD80,0,0,0&chds=a"
+                             alt="${coin.name} 7-day chart" width="100" height="30">
+                    </td>
+                </tr>
             `;
+        }).join('');
+    }
+
+    // Filter cryptocurrency data
+    function filterCryptoData(filter) {
+        renderCryptoData(filter);
+    }
+
+    // Fetch crypto news
+    async function fetchCryptoNews() {
+        const API_KEY = "YOUR_API_KEY"; // 218164b91b8c43bfbae5a0165256679d
+        const NEWS_URL = `https://newsapi.org/v2/everything?q=cryptocurrency&language=en&sortBy=publishedAt&apiKey=${API_KEY}`;
+
+        try {
+            let response = await fetch(NEWS_URL);
+            let data = await response.json();
+            let articles = data.articles.slice(0, 5); // Get the top 5 news articles
+
+            cryptoNewsElement.innerHTML = articles.map(article => `
+                <div class="news-card">
+                    <img src="${article.urlToImage || 'https://via.placeholder.com/300x150'}" alt="News Image">
+                    <div class="news-content">
+                        <span class="news-source">${article.source.name}</span>
+                        <h4>${article.title}</h4>
+                        <p>${article.description || 'No description available.'}</p>
+                        <span class="news-time">${new Date(article.publishedAt).toLocaleString()}</span>
+                    </div>
+                </div>
+            `).join("");
+        } catch (error) {
+            console.error("Error fetching news:", error);
+            cryptoNewsElement.innerHTML = '<p class="error">Failed to load news. Please try again later.</p>';
         }
+    }
 
-        // Setup WebSocket connections for each cryptocurrency
-        function setupWebSockets() {
-            const symbols = Object.keys(cryptoData);
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchInitialData();
+        fetchCryptoNews();
 
-            // Close existing connection if any
-            if (webSocket) {
-                webSocket.close();
+        setInterval(() => {
+            if (!webSocket || webSocket.readyState !== WebSocket.OPEN) {
+                fetchInitialData();
             }
+        }, REFRESH_INTERVAL);
 
-            // Create a single WebSocket connection for all symbols
-            const streams = symbols.map(symbol => `${symbol.toLowerCase()}@ticker`).join('/');
-            webSocket = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
-
-            webSocket.onopen = () => {
-                console.log('WebSocket connection established');
-            };
-
-            webSocket.onmessage = (event) => {
-                const message = JSON.parse(event.data);
-                const { data } = message;
-
-                if (data && data.s) {
-                    const symbol = data.s;
-                    const price = parseFloat(data.c);
-                    const openPrice = parseFloat(data.o);
-                    const change24h = calculate24hChange(price, openPrice);
-                    const volume = parseFloat(data.q);
-
-                    // Update crypto data
-                    cryptoData[symbol] = {
-                        ...cryptoData[symbol],
-                        price: data.c,
-                        change24h,
-                        volume: data.q
-                    };
-
-                    // Update UI
-                    renderCryptoData();
-                    updateGlobalStats();
-                    updateLastUpdatedTime();
-                }
-            };
-
-            webSocket.onerror = (error) => {
-                console.error('WebSocket error:', error);
-            };
-
-            webSocket.onclose = () => {
-                console.log('WebSocket connection closed. Attempting to reconnect...');
-                setTimeout(setupWebSockets, WEBSOCKET_RECONNECT_DELAY);
-            };
-        }
-
-
-        // Render cryptocurrency data
-        function renderCryptoData(filter = 'All') {
-            if (!initialDataLoaded) return;
-
-            // Convert object to array and filter
-            let dataArray = Object.values(cryptoData);
-
-            // Apply filter
-            if (filter === 'Gainers') {
-                dataArray = dataArray.filter(coin => coin.change24h > 0);
-            } else if (filter === 'Losers') {
-                dataArray = dataArray.filter(coin => coin.change24h < 0);
-            }
-
-            // Sort by volume
-            dataArray.sort((a, b) => parseFloat(b.volume) - parseFloat(a.volume));
-
-            // Render table
-            cryptoDataElement.innerHTML = dataArray.map((coin, index) => {
-                const change24h = coin.change24h || 0;
-
-                return `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>
-                            <div class="crypto-name">
-                                <img src="https://cryptoicons.org/api/icon/${coin.name.toLowerCase()}/50" alt="${coin.name}" width="24" height="24">
-                                <span>${coin.name}</span>
-                                <span class="symbol">${coin.symbol.replace('USDT', '')}</span>
-                            </div>
-                        </td>
-                        <td>${formatCurrency(coin.price)}</td>
-                        <td><span class="change ${change24h >= 0 ? 'positive' : 'negative'}">${formatPercentage(change24h)}</span></td>
-                        <td>${formatCurrency(coin.volume)}</td>
-                        <td>${coin.marketCap === 'N/A' ? 'N/A' : formatCurrency(coin.marketCap)}</td>
-                        <td>
-                            <img src="https://chart.googleapis.com/chart?cht=lc&chs=100x30&chd=t:10,20,30,40,30,20,10&chco=0077CC&chm=B,DDDDDD80,0,0,0&chds=a"
-                                 alt="${coin.name} 7-day chart" width="100" height="30">
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        // Filter cryptocurrency data
-        function filterCryptoData(filter) {
-            renderCryptoData(filter);
-        }
-
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', () => {
-            // Fetch initial data
-            fetchInitialData();
-
-            // Set up periodic refresh (for initial data only - WebSocket handles real-time updates)
-            setInterval(() => {
-                if (!webSocket || webSocket.readyState !== WebSocket.OPEN) {
-                    fetchInitialData();
-                }
-            }, REFRESH_INTERVAL);
-
-            // Add event listeners for view options
-            const viewOptions = document.querySelectorAll('.view-options button');
-            viewOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    viewOptions.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                    filterCryptoData(this.textContent);
-                });
+        const viewOptions = document.querySelectorAll('.view-options button');
+        viewOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                viewOptions.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                filterCryptoData(this.textContent);
             });
         });
-    </script>
+    });
+</script>
 </body>
 </html>
