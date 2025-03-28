@@ -1,4 +1,17 @@
 /* Basic styles for the crypto tracker */
+#forex-overview, #economic-calendar {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#forex-data p, #calendar-data p {
+    margin: 5px 0;
+    font-size: 1em;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
