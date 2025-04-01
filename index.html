@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CryptoView - Real-Time Cryptocurrency Market Overview</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+<!-- at the end of the body -->
+<script src="binance-socket.js"></script>
+<script src="script.js"></script>
     <style>
         /* Global Styles */
         :root {
@@ -511,27 +514,17 @@
                 </div>
             </div>
             <div class="crypto-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Name</th>
-                            <th>Price</th>
-                            <th>24h %</th>
-                            <th>Volume(24h)</th>
-                            <th>Market Cap</th>
-                            <th>Last 7 Days</th>
-                        </tr>
-                    </thead>
-                    <tbody id="crypto-data">
-                        <tr>
-                            <td colspan="7" class="loading">
-                                <div class="spinner"></div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <!-- Add these attributes to your HTML elements -->
+            <table aria-label="Cryptocurrency Prices">
+                <thead>
+                    <tr>
+                        <th scope="col">Coin</th>
+                        <th scope="col">Price</th>
+                    </tr>
+                </thead>
+                <tbody id="crypto-data">
+                </tbody>
+            </table>
         </section>
 
         <section class="news-section">

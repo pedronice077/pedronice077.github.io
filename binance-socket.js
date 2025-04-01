@@ -1,3 +1,4 @@
+<script src="binance-socket.js"></script>
 // Binance WebSocket handler
 let binanceSocket = null;
 
@@ -48,7 +49,7 @@ function updatePrice(data, symbol) {
     // Format with color based on price change
     const changeColor = priceChange >= 0 ? 'green' : 'red';
     const changeSymbol = priceChange >= 0 ? '▲' : '▼';
-    
+
     priceElement.innerHTML = `
         <div class="price-container">
             <span class="current-price">${price}</span>
@@ -65,7 +66,7 @@ document.addEventListener('DOMContentLoaded', connectBinanceWebSocket);
 
 // Reconnect when the page becomes visible again
 document.addEventListener('visibilitychange', function() {
-    if (document.visibilityState === 'visible' && 
+    if (document.visibilityState === 'visible' &&
         (binanceSocket === null || binanceSocket.readyState !== WebSocket.OPEN)) {
         connectBinanceWebSocket();
     }
