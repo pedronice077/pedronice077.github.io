@@ -1,10 +1,30 @@
 /* Basic styles for the crypto tracker */
-#forex-overview, #economic-calendar {
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --background-color: #f4f4f4;
+    --text-color: #333;
+    --border-color: #ddd;
+    --font-family: 'Arial', sans-serif;
+}
+
+body {
+    font-family: var(--font-family);
+    line-height: 1.6;
+    color: var(--text-color);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--background-color);
+}
+
+#forex-overview, #economic-calendar, table {
     margin-top: 20px;
     padding: 10px;
     background-color: #fff;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 #forex-data p, #calendar-data p {
@@ -12,28 +32,10 @@
     font-size: 1em;
 }
 
-body {
-    font-family: 'Arial', sans-serif;
-    line-height: 1.6;
-    color: #333;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f4f4f4;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-    background-color: white;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-
 th, td {
     padding: 12px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--border-color);
 }
 
 th {
@@ -46,11 +48,10 @@ tr:hover {
 }
 
 h2 {
-    color: #2c3e50;
-    border-bottom: 2px solid #3498db;
+    color: var(--secondary-color);
+    border-bottom: 2px solid var(--primary-color);
     padding-bottom: 10px;
 }
-
 
 #market-trends {
     margin-top: 20px;
@@ -74,6 +75,7 @@ h2 {
     font-size: 0.8em;
     color: #666;
 }
+
 @media (max-width: 768px) {
     body {
         font-size: 14px;
