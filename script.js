@@ -23,18 +23,23 @@ async function fetchCryptoData() {
         const coins = ["BTCUSDT", ...ADDITIONAL_COINS]; // Include additional coins
         const filteredData = data.filter(coin => coins.includes(coin.symbol));
 
-        const tableBody = document.getElementById("crypto-data");
-        tableBody.innerHTML = ""; // Clear previous data
+       const tableBody = document.getElementById("crypto-data");
+tableBody.innerHTML = ""; // Clear previous data
 
-        filteredData.forEach(coin => {
-            const row = `<tr>
-                <td>${coin.symbol.replace("USDT", "")}</td>
-                <td>$${parseFloat(coin.price).toFixed(2)}</td>
-            </tr>`;
-            tableBody.innerHTML += row;
-        });
-    } catch (error) {
-        console.error("Error fetching data:", error);
-        showError("Failed to fetch cryptocurrency data. Please try again later.");
-    }
-}
+filteredData.forEach(coin => {
+    // Create a table row element
+    const row = document.createElement('tr');
+
+    // Create and populate the first cell
+    const symbolCell = document.createElement('td');
+    symbolCell.textContent = coin.symbol.replace("USDT", "");
+    row.appendChild(symbolCell);
+
+    // Create and populate the second cell
+    const priceCell = document.createElement('td');
+    priceCell.textContent = `$${parseFloat(coin.price).toFixed(2)}`;
+    row.appendChild(priceCell);
+
+    // Append the row to the table body
+    tableBody.appendChild(row);
+});
