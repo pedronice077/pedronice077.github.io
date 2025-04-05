@@ -1,14 +1,14 @@
 {
   "extends": [
-    "development"
+    "development"  // Extending from the development configuration
   ],
   "hints": {
     "axe/name-role-value": [
       "default",
       {
-        "link-name": "off"
+        "link-name": "off"  // Disabling the link-name rule for now
       }
     ],
-    "disown-opener": "off"
+    "disown-opener": "off"  // Disabling the disown-opener rule as it's not needed
   }
 }
