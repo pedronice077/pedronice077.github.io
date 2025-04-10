@@ -1,4 +1,20 @@
-import React from 'react';
+ import React from 'react';
+import { Helmet } from 'react-helmet';
+import Dashboard from '@/components/Dashboard';
+
+const Index: React.FC = () => {
+  return (
+    <>
+      <Helmet>
+        <title>Dashboard</title>
+        <meta name="description" content="Overview of the application dashboard" />
+      </Helmet>
+      <Dashboard />
+    </>
+  );
+};
+
+export default Index;
   { id: 'binancecoin', rank: 3, name: 'Binance Coin', symbol: 'BNB', price: 320, change: 0.68, volume: 1900000000 },
   { id: 'solana', rank: 4, name: 'Solana', symbol: 'SOL', price: 142, change: 5.32, volume: 3700000000 },
   { id: 'ripple', rank: 5, name: 'XRP', symbol: 'XRP', price: 0.598, change: -2.34, volume: 1800000000 },
